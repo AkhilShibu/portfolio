@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akhil P Shibu — Data & Analytics Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#020409; --surface:#080d1a; --card:#0c1425; --border:#1a2a4a;
+  --accent:#00d4ff; --accent2:#7b2fff; --accent3:#00ff9d;
+  --gold:#ffc847; --red:#ff4d6d;
+  --text:#e8eef8; --muted:#5a7090; --navy:#0a1628;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+.cursor{width:10px;height:10px;background:var(--accent);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:screen;transition:transform .1s,width .2s,height .2s}
+.cursor-ring{width:32px;height:32px;border:1px solid rgba(0,212,255,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:left .1s ease,top .1s ease}
+.cursor-dot{width:4px;height:4px;background:var(--accent3);border-radius:50%;position:fixed;pointer-events:none;z-index:10000;transition:left .05s,top .05s}
+
+/* SCAN */
+.scanline{position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.12;animation:scan 10s linear infinite;z-index:997;pointer-events:none}
+@keyframes scan{0%{top:-2px}100%{top:100vh}}
+
+/* BG CANVAS */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.6}
+
+/* NOISE */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.5}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 60px;background:linear-gradient(to bottom,rgba(2,4,9,.95),transparent);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,212,255,.05)}
+.nav-logo{font-family:'Space Mono',monospace;font-size:.82rem;color:var(--accent);letter-spacing:3px;text-transform:uppercase}
+.nav-logo span{color:var(--muted)}
+.nav-links{display:flex;gap:40px;list-style:none}
+.nav-links a{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted);text-decoration:none;letter-spacing:2px;text-transform:uppercase;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width .3s}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a:hover::after{width:100%}
+
+/* SECTIONS */
+section{position:relative;z-index:1}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:0 60px;overflow:hidden}
+.hero-inner{max-width:860px}
+.hero-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:24px;opacity:0;animation:fadeUp .8s .3s forwards;display:flex;align-items:center;gap:12px}
+.hero-tag::before{content:'';width:40px;height:1px;background:var(--accent)}
+.hero-name{font-family:'Syne',sans-serif;font-size:clamp(3.5rem,8vw,6.5rem);font-weight:800;line-height:.95;letter-spacing:-2px;margin-bottom:20px;opacity:0;animation:fadeUp .9s .5s forwards}
+.hero-name .l2{color:transparent;-webkit-text-stroke:1px rgba(0,212,255,.35);display:block}
+.hero-name .aw{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:1.1rem;color:var(--muted);line-height:1.75;max-width:540px;margin-bottom:48px;opacity:0;animation:fadeUp .9s .7s forwards}
+.hero-desc strong{color:var(--text);font-weight:400}
+.hero-cta{display:flex;gap:20px;flex-wrap:wrap;opacity:0;animation:fadeUp .9s .9s forwards}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;background:var(--accent);color:var(--bg);font-family:'Space Mono',monospace;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-weight:700;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));transition:all .3s}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(123,47,255,.4)}
+.btn-outline{display:inline-flex;align-items:center;gap:10px;padding:13px 32px;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .3s;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 24px rgba(0,212,255,.15)}
+.hero-stats{position:absolute;right:60px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:32px;opacity:0;animation:fadeIn 1.2s 1.2s forwards}
+.stat-item{text-align:right}
+.stat-num{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.stat-label{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.scroll-ind{position:absolute;bottom:40px;left:60px;display:flex;align-items:center;gap:12px;font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;animation:fadeIn 1s 1.5s both}
+.scroll-line{width:60px;height:1px;background:linear-gradient(to right,var(--accent),transparent);animation:pulse-line 2s ease-in-out infinite}
+@keyframes pulse-line{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── ABOUT ── */
+#about{padding:120px 60px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1200px;margin:0 auto}
+.about-label{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:16px}
+.about-heading{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;line-height:1.1;margin-bottom:24px}
+.about-heading .hl{background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.about-text{color:var(--muted);line-height:1.8;font-size:.98rem;margin-bottom:14px}
+.about-text strong{color:var(--text);font-weight:400}
+.about-right{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.about-card{background:var(--card);border:1px solid var(--border);padding:28px 22px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+.about-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--accent),var(--accent2));opacity:0;transition:opacity .3s}
+.about-card:hover{border-color:rgba(0,212,255,.3);transform:translateY(-4px)}
+.about-card:hover::before{opacity:1}
+.about-card-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent);line-height:1;margin-bottom:8px}
+.about-card-lbl{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+
+/* ── SECTION COMMON ── */
+.sec-label{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
+.sec-title{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;line-height:1.1}
+
+/* ── SKILLS ── */
+#skills{padding:120px 60px;max-width:1200px;margin:0 auto}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
+.skill-group{background:var(--card);border:1px solid var(--border);padding:32px 26px;transition:all .3s;position:relative;overflow:hidden}
+.skill-group::after{content:'';position:absolute;bottom:0;left:0;right:0;height:0;background:linear-gradient(to top,rgba(0,212,255,.04),transparent);transition:height .4s}
+.skill-group:hover{border-color:rgba(0,212,255,.25)}
+.skill-group:hover::after{height:100%}
+.skill-icon{font-size:1.6rem;margin-bottom:14px}
+.skill-group-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:14px}
+.skill-tags{display:flex;flex-wrap:wrap;gap:7px}
+.skill-tag{font-family:'Space Mono',monospace;font-size:.6rem;padding:4px 9px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.15);color:var(--accent);letter-spacing:1px;transition:all .2s}
+.skill-tag:hover{background:rgba(0,212,255,.12);border-color:var(--accent)}
+.skill-tag.p{background:rgba(123,47,255,.06);border-color:rgba(123,47,255,.2);color:#b070ff}
+.skill-tag.g{background:rgba(0,255,157,.06);border-color:rgba(0,255,157,.2);color:var(--accent3)}
+
+/* ── EXPERIENCE ── */
+#experience{padding:120px 60px;background:linear-gradient(to bottom,transparent,rgba(8,13,26,.8),transparent)}
+.exp-inner{max-width:1000px;margin:0 auto}
+.timeline{position:relative;margin-top:60px}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--accent),var(--accent2),transparent)}
+.tl-item{padding-left:48px;margin-bottom:64px;position:relative;opacity:0;transform:translateX(-20px);transition:all .6s}
+.tl-item.visible{opacity:1;transform:translateX(0)}
+.tl-dot{position:absolute;left:-5px;top:8px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 16px var(--accent)}
+.tl-dot.p{background:var(--accent2);box-shadow:0 0 16px var(--accent2)}
+.tl-date{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.tl-date.p{color:var(--accent2)}
+.tl-role{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:700;margin-bottom:4px}
+.tl-company{font-size:.88rem;color:var(--muted);margin-bottom:18px;font-style:italic}
+.tl-pts{list-style:none;display:flex;flex-direction:column;gap:9px}
+.tl-pts li{display:flex;gap:12px;color:var(--muted);font-size:.88rem;line-height:1.6}
+.tl-pts li::before{content:'▸';color:var(--accent);flex-shrink:0;margin-top:1px;font-size:.78rem}
+.tl-pts li.p::before{color:var(--accent2)}
+.tl-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.badge{font-family:'Space Mono',monospace;font-size:.58rem;padding:4px 10px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid rgba(0,212,255,.2);color:var(--muted)}
+.badge.award{border-color:rgba(255,200,71,.3);color:var(--gold);background:rgba(255,200,71,.05)}
+
+/* ── BLADES HERO SECTION ── */
+#blades{padding:120px 60px;position:relative;overflow:hidden}
+.blades-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,212,255,.04) 0%,transparent 70%);pointer-events:none}
+.blades-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.blades-label-row{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.blades-badge{font-family:'Space Mono',monospace;font-size:.6rem;padding:5px 12px;background:rgba(255,200,71,.08);border:1px solid rgba(255,200,71,.3);color:var(--gold);letter-spacing:2px;text-transform:uppercase}
+.blades-heading{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:800;line-height:1;margin-bottom:20px}
+.blades-heading .b-accent{background:linear-gradient(135deg,#00d4ff,#00ff9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.blades-sub{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:24px}
+.blades-desc{color:var(--muted);line-height:1.8;font-size:.98rem;margin-bottom:32px}
+.blades-desc strong{color:var(--text);font-weight:400}
+.blades-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+.b-stat{background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.12);padding:20px 16px;text-align:center}
+.b-stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.b-stat-lbl{font-family:'Space Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+.blades-features{display:flex;flex-direction:column;gap:12px}
+.b-feature{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;background:var(--card);border:1px solid var(--border);transition:border-color .3s}
+.b-feature:hover{border-color:rgba(0,212,255,.25)}
+.b-feature-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.b-feature-text{font-size:.88rem;color:var(--muted);line-height:1.5}
+.b-feature-text strong{color:var(--text);display:block;font-size:.9rem;margin-bottom:2px}
+/* BLADES canvas */
+.blades-visual{position:relative;height:480px;background:var(--card);border:1px solid var(--border);overflow:hidden;clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px))}
+#blades-canvas{position:absolute;inset:0;width:100%;height:100%}
+.blades-visual-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;background:linear-gradient(to top,rgba(2,4,9,.9) 0%,transparent 50%);pointer-events:none}
+.bvo-title{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+.bvo-desc{font-size:.8rem;color:var(--muted)}
+/* pulsing ring */
+.blades-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;border:1px solid rgba(0,212,255,.15);animation:ring-pulse 3s ease-in-out infinite;pointer-events:none}
+.blades-ring:nth-child(2){width:280px;height:280px;animation-delay:1s;border-color:rgba(0,212,255,.08)}
+.blades-ring:nth-child(3){width:360px;height:360px;animation-delay:2s;border-color:rgba(0,212,255,.04)}
+@keyframes ring-pulse{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:.4;transform:translate(-50%,-50%) scale(1.05)}}
+.center-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,255,157,.1));border:1px solid rgba(0,212,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.6rem;z-index:2;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
+
+/* ── PROJECTS (anonymised) ── */
+#projects{padding:120px 60px;max-width:1200px;margin:0 auto}
+.projects-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:60px}
+.proj-card{background:var(--card);border:1px solid var(--border);padding:36px 32px;position:relative;overflow:hidden;transition:all .4s;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+.proj-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.03),transparent,rgba(123,47,255,.03));opacity:0;transition:opacity .4s}
+.proj-card:hover{border-color:rgba(0,212,255,.28);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(0,212,255,.05)}
+.proj-card:hover::before{opacity:1}
+.proj-canvas-wrap{width:100%;height:160px;margin-bottom:24px;position:relative;background:var(--navy);border:1px solid var(--border);overflow:hidden}
+.proj-canvas-wrap canvas{position:absolute;inset:0;width:100%;height:100%}
+.proj-num{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:3px;margin-bottom:12px}
+.proj-title{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:700;margin-bottom:6px}
+.proj-category{font-family:'Space Mono',monospace;font-size:.64rem;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.proj-desc{color:var(--muted);font-size:.88rem;line-height:1.7;margin-bottom:20px}
+.proj-impact{display:flex;gap:20px;margin-bottom:20px}
+.imp-num{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.imp-lbl{font-family:'Space Mono',monospace;font-size:.56rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.proj-tech{display:flex;flex-wrap:wrap;gap:7px}
+.tech-tag{font-family:'Space Mono',monospace;font-size:.58rem;padding:4px 9px;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--muted);letter-spacing:.5px}
+
+/* ── CONTACT ── */
+#contact{padding:120px 60px;text-align:center;position:relative;overflow:hidden}
+.contact-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(0,212,255,.05),transparent 70%);pointer-events:none}
+.contact-inner{max-width:680px;margin:0 auto;position:relative}
+.contact-heading{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.1;margin-bottom:20px}
+.contact-heading .hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.contact-sub{color:var(--muted);font-size:1rem;line-height:1.7;margin-bottom:48px}
+.contact-links{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
+.c-link{display:flex;align-items:center;gap:10px;padding:14px 28px;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .3s}
+.c-link:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 24px rgba(0,212,255,.1);transform:translateY(-2px)}
+.c-link svg{width:15px;height:15px;fill:currentColor}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 60px;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+.ft{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:2px}
+.ft-a{color:var(--accent)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .7s,transform .7s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* GLITCH */
+.glitch{position:relative}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;font-family:inherit;font-weight:inherit;font-size:inherit}
+.glitch::before{color:var(--accent);clip-path:polygon(0 0,100% 0,100% 45%,0 45%);transform:translate(-2px,0);animation:g1 5s infinite;opacity:0}
+.glitch::after{color:var(--accent2);clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%);transform:translate(2px,0);animation:g2 5s infinite;opacity:0}
+@keyframes g1{0%,93%,100%{opacity:0;transform:translate(0)}94%{opacity:.6;transform:translate(-3px,1px)}96%{opacity:0;transform:translate(3px,-1px)}97%{opacity:.5;transform:translate(-2px,0)}}
+@keyframes g2{0%,93%,100%{opacity:0;transform:translate(0)}94%{opacity:.5;transform:translate(3px,-1px)}96%{opacity:0;transform:translate(-2px,1px)}97%{opacity:.4;transform:translate(2px,0)}}
+
+@media(max-width:900px){
+  nav{padding:16px 24px}.nav-links{display:none}
+  #hero{padding:100px 24px 60px}.hero-stats{display:none}
+  #about{grid-template-columns:1fr;padding:80px 24px;gap:40px}
+  #skills{padding:80px 24px}.skills-grid{grid-template-columns:1fr}
+  #experience{padding:80px 24px}
+  #blades{padding:80px 24px}.blades-inner{grid-template-columns:1fr}.blades-visual{height:320px}
+  #projects{padding:80px 24px}.projects-grid{grid-template-columns:1fr}
+  #contact{padding:80px 24px}
+  footer{padding:24px;flex-direction:column;gap:12px;text-align:center}
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="scanline"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" id="nav-logo"><span>.dev</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Stack</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#blades">BLADES</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Data & Analytics Manager · London</div>
+    <h1 class="hero-name glitch" data-text="AKHIL">AKHIL
+      <span class="l2">P <span class="aw">SHIBU</span></span>
+    </h1>
+    <p class="hero-desc">
+      I build the <strong>intelligence layer</strong> between raw financial data and strategic decisions — ETL pipelines, executive dashboards, and portfolio analytics that power audit at scale.
+    </p>
+    <div class="hero-cta">
+      <a href="#blades" class="btn-primary">See BLADES ↓</a>
+      <a href="#contact" class="btn-outline">Get In Touch →</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num" id="s1">9+</div><div class="stat-label">Years Experience</div></div>
+    <div class="stat-item"><div class="stat-num" id="s2">60%</div><div class="stat-label">Audit Time Saved</div></div>
+    <div class="stat-item"><div class="stat-num" id="s3">30+</div><div class="stat-label">Global Clients</div></div>
+    <div class="stat-item"><div class="stat-num" id="s4">6</div><div class="stat-label">ERPs Supported</div></div>
+  </div>
+  <div class="scroll-ind"><div class="scroll-line"></div>Scroll to explore</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="reveal">
+    <div class="about-label">Who I Am</div>
+    <h2 class="about-heading">Bridging <span class="hl">Finance,<br>Data & Technology</span></h2>
+    <p class="about-text">I'm a <strong>Technology Risk Assurance Manager</strong>, building the data infrastructure that makes audits smarter, faster, and more reliable. My work sits at the intersection of financial systems, engineering, and analytics.</p>
+    <p class="about-text">From architecting multi-ERP ETL pipelines to delivering executive Power BI dashboards for FTSE clients — I turn complex, messy financial data into trusted, decision-ready intelligence.</p>
+    <p class="about-text">Previously at a <strong>Big Four global firm</strong>, where I led development of a global data transformation platform across 30+ client engagements worldwide.</p>
+  </div>
+  <div class="about-right reveal">
+    <div class="about-card"><div class="about-card-num">9+</div><div class="about-card-lbl">Years in Data & Finance Tech</div></div>
+    <div class="about-card"><div class="about-card-num">£200m+</div><div class="about-card-lbl">Portfolio Data Managed</div></div>
+    <div class="about-card"><div class="about-card-num">30+</div><div class="about-card-lbl">Global ERP Clients</div></div>
+    <div class="about-card"><div class="about-card-num">2024</div><div class="about-card-lbl">Innovation Award — Audit</div></div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="reveal"><div class="sec-label">What I Work With</div><div class="sec-title">Technical Stack</div></div>
+  <div class="skills-grid">
+    <div class="skill-group reveal"><div class="skill-icon">⚡</div><div class="skill-group-title">Analytics & BI</div><div class="skill-tags"><span class="skill-tag">Power BI</span><span class="skill-tag">DAX</span><span class="skill-tag">Power Query</span><span class="skill-tag">Excel Advanced</span><span class="skill-tag">XLOOKUP / SUMIFS</span><span class="skill-tag">Pivot Tables</span><span class="skill-tag">Tableau</span></div></div>
+    <div class="skill-group reveal"><div class="skill-icon">🔧</div><div class="skill-group-title">Data Engineering</div><div class="skill-tags"><span class="skill-tag p">Python</span><span class="skill-tag p">SQL</span><span class="skill-tag p">PySpark</span><span class="skill-tag p">C#</span><span class="skill-tag p">ETL / ELT</span><span class="skill-tag p">Alteryx</span><span class="skill-tag p">SSIS</span></div></div>
+    <div class="skill-group reveal"><div class="skill-icon">☁️</div><div class="skill-group-title">Cloud & Platforms</div><div class="skill-tags"><span class="skill-tag g">Azure Databricks</span><span class="skill-tag g">Microsoft Azure</span><span class="skill-tag g">Hadoop</span><span class="skill-tag g">REST APIs</span><span class="skill-tag g">JSON / XML</span><span class="skill-tag g">Git</span></div></div>
+    <div class="skill-group reveal"><div class="skill-icon">🏗️</div><div class="skill-group-title">ERP Systems</div><div class="skill-tags"><span class="skill-tag">Dynamics 365</span><span class="skill-tag">Oracle R12</span><span class="skill-tag">SAP</span><span class="skill-tag">Navision</span><span class="skill-tag">Infor SUN</span><span class="skill-tag">JD Edwards</span><span class="skill-tag">Access Dimension</span></div></div>
+    <div class="skill-group reveal"><div class="skill-icon">📊</div><div class="skill-group-title">Portfolio & PMO</div><div class="skill-tags"><span class="skill-tag p">KPI Frameworks</span><span class="skill-tag p">Data Governance</span><span class="skill-tag p">ISQM1</span><span class="skill-tag p">Forecasting Models</span><span class="skill-tag p">Change Frameworks</span></div></div>
+    <div class="skill-group reveal"><div class="skill-icon">🤝</div><div class="skill-group-title">Leadership</div><div class="skill-tags"><span class="skill-tag g">Executive Reporting</span><span class="skill-tag g">Stakeholder Mgmt</span><span class="skill-tag g">Team Mentoring</span><span class="skill-tag g">Cross-functional</span><span class="skill-tag g">Finance & Risk Align</span></div></div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="exp-inner">
+    <div class="reveal"><div class="sec-label">Career Journey</div><div class="sec-title">Experience</div></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Jul 2022 — Present</div>
+        <div class="tl-role">Manager, Technology Risk Assurance</div>
+        <div class="tl-company">Top-10 UK Accounting & Advisory Firm · London</div>
+        <ul class="tl-pts">
+          <li>Designed and delivered BLADES — a secure, multi-ERP financial data extraction and transformation engine now adopted globally across audit engagements; reduced audit cycle time by 60%.</li>
+          <li>Implemented data quality controls and validation frameworks. Built executive Power BI dashboards for FTSE-listed clients.</li>
+          <li>Led development of a financial data standardisation platform with Azure Databricks integration.</li>
+          <li>Defined KPI standards, ISQM1-aligned governance, and mentored junior developers across the data team.</li>
+        </ul>
+        <div class="tl-badges">
+          <span class="badge award">🏆 Digital Innovation Award 2024 — Audit</span>
+          <span class="badge">Dynamics 365</span><span class="badge">Oracle R12</span><span class="badge">Power BI</span><span class="badge">Python</span><span class="badge">Azure Databricks</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot p"></div>
+        <div class="tl-date p">Oct 2021 — Jun 2022</div>
+        <div class="tl-role">HMI Engineer</div>
+        <div class="tl-company">Global Rail & Transport Company · London</div>
+        <ul class="tl-pts">
+          <li class="p">Delivered system design and HMI visualisation for a major metro traffic management and depot system.</li>
+          <li class="p">Integrated control and monitoring modules improving operational visibility.</li>
+        </ul>
+        <div class="tl-badges"><span class="badge">HMI Design</span><span class="badge">System Integration</span><span class="badge">Transport Infrastructure</span></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Sep 2016 — Sep 2021</div>
+        <div class="tl-role">Data Analyst — Global Data Capture & Transformation</div>
+        <div class="tl-company">Big Four Global Accounting Firm · London</div>
+        <ul class="tl-pts">
+          <li>Designed and led a global audit data transformation platform automating extraction and validation from Oracle, SAP, and Navision.</li>
+          <li>Built Alteryx workflows and SQL pipelines for large-scale financial datasets across 30+ client engagements globally.</li>
+          <li>Defined ETL standards adopted firm-wide; received Gold Badge in Data Integration.</li>
+        </ul>
+        <div class="tl-badges">
+          <span class="badge award">🥇 Gold Badge — Data Integration</span>
+          <span class="badge">Alteryx</span><span class="badge">Oracle</span><span class="badge">SAP</span><span class="badge">SQL</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLADES HERO -->
+<section id="blades">
+  <div class="blades-bg"></div>
+  <div class="blades-inner">
+    <div class="reveal">
+      <div class="blades-label-row">
+        <span class="blades-badge">⚔ Flagship Tool</span>
+        <span class="blades-badge" style="border-color:rgba(0,255,157,.3);color:var(--accent3);background:rgba(0,255,157,.05)">Secure Extraction</span>
+      </div>
+      <h2 class="blades-heading"><span class="b-accent">BLADES</span></h2>
+      <div class="blades-sub">Financial Data Extraction & Transformation Engine</div>
+      <p class="blades-desc">
+        <strong>BLADES</strong> is a secure, multi-ERP financial data extraction and transformation engine I designed and built from the ground up. It automates the ingestion, cleansing, validation, and transformation of <strong>General Ledger, Trial Balance, and Journal Entry</strong> data across six ERP platforms — delivering audit-ready datasets in a fraction of the time previously required.
+      </p>
+      <div class="blades-stats">
+        <div class="b-stat"><div class="b-stat-num">60%</div><div class="b-stat-lbl">Audit time reduced</div></div>
+        <div class="b-stat"><div class="b-stat-num">6</div><div class="b-stat-lbl">ERPs supported</div></div>
+        <div class="b-stat"><div class="b-stat-num">Global</div><div class="b-stat-lbl">Deployment</div></div>
+      </div>
+      <div class="blades-features">
+        <div class="b-feature">
+          <div class="b-feature-icon">🔐</div>
+          <div class="b-feature-text"><strong>Secure Extraction Layer</strong>Data extracted directly from source ERP systems with integrity hashing, audit trails, and zero data leakage by design.</div>
+        </div>
+        <div class="b-feature">
+          <div class="b-feature-icon">⚙️</div>
+          <div class="b-feature-text"><strong>Multi-ERP Compatibility</strong>Single pipeline supporting Dynamics 365, Oracle R12, SAP, Navision, Infor SUN, Access Dimension, and JD Edwards.</div>
+        </div>
+        <div class="b-feature">
+          <div class="b-feature-icon">✅</div>
+          <div class="b-feature-text"><strong>Automated Data Quality Controls</strong>Built-in validation, reconciliation, and completeness checks with exception reporting at every transformation stage.</div>
+        </div>
+        <div class="b-feature">
+          <div class="b-feature-icon">📊</div>
+          <div class="b-feature-text"><strong>Audit-Ready Output</strong>Standardised GL, TB, and JE datasets ready for direct consumption by analytics dashboards and audit workflows.</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="blades-visual">
+        <div class="blades-ring"></div>
+        <div class="blades-ring"></div>
+        <div class="blades-ring"></div>
+        <div class="center-icon">⚔</div>
+        <canvas id="blades-canvas"></canvas>
+        <div class="blades-visual-overlay">
+          <div class="bvo-title">Live Data Flow Simulation</div>
+          <div class="bvo-desc">ERP sources → Extract → Transform → Validate → Audit-ready output</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS (anonymised) -->
+<section id="projects">
+  <div class="reveal"><div class="sec-label">What I've Built</div><div class="sec-title">Key Projects</div></div>
+  <div class="projects-grid">
+
+    <!-- P1: Portfolio standardisation platform -->
+    <div class="proj-card reveal">
+      <div class="proj-canvas-wrap"><canvas id="pc1"></canvas></div>
+      <div class="proj-num">01 / DATA STANDARDISATION</div>
+      <div class="proj-title">Financial Data Standardisation Platform</div>
+      <div class="proj-category">Cloud ETL · Azure Databricks</div>
+      <p class="proj-desc">Designed and built a financial data mapping and standardisation platform on Azure Databricks, normalising multi-source ERP outputs into a unified, audit-ready schema. Handles complex field mapping, currency normalisation, and period alignment at scale.</p>
+      <div class="proj-impact">
+        <div><div class="imp-num">100%</div><div class="imp-lbl">Schema consistency</div></div>
+        <div><div class="imp-num">Multi-ERP</div><div class="imp-lbl">Source coverage</div></div>
+      </div>
+      <div class="proj-tech"><span class="tech-tag">Azure Databricks</span><span class="tech-tag">PySpark</span><span class="tech-tag">SQL</span><span class="tech-tag">Data Modelling</span><span class="tech-tag">ETL</span></div>
+    </div>
+
+    <!-- P2: Global audit data platform -->
+    <div class="proj-card reveal">
+      <div class="proj-canvas-wrap"><canvas id="pc2"></canvas></div>
+      <div class="proj-num">02 / GLOBAL AUDIT PLATFORM</div>
+      <div class="proj-title">Global Audit Data Extraction Platform</div>
+      <div class="proj-category">Enterprise ETL · 30+ Clients</div>
+      <p class="proj-desc">Led design and delivery of a global audit data extraction utility automating data ingestion, validation, and reporting from multiple ERP systems. Deployed across 30+ client engagements worldwide. Defined ETL standards adopted firm-wide and recognised with a Gold Badge in Data Integration.</p>
+      <div class="proj-impact">
+        <div><div class="imp-num">30+</div><div class="imp-lbl">Global clients</div></div>
+        <div><div class="imp-num">🥇 Gold</div><div class="imp-lbl">Integration badge</div></div>
+      </div>
+      <div class="proj-tech"><span class="tech-tag">Alteryx</span><span class="tech-tag">SQL</span><span class="tech-tag">Oracle</span><span class="tech-tag">SAP</span><span class="tech-tag">Navision</span></div>
+    </div>
+
+    <!-- P3: FSA Network viz -->
+    <div class="proj-card reveal">
+      <div class="proj-canvas-wrap"><canvas id="pc3"></canvas></div>
+      <div class="proj-num">03 / GRAPH ANALYTICS</div>
+      <div class="proj-title">Financial Network Graph Visualisation</div>
+      <div class="proj-category">Desktop + Web App · C# & Blazor</div>
+      <p class="proj-desc">Built a WPF desktop cleanser and Blazor Server frontend using graph visualisation to map transaction networks for audit investigation. Features drill-down modals, high-risk node marking, and sortable transaction tables for large datasets.</p>
+      <div class="proj-impact">
+        <div><div class="imp-num">M+</div><div class="imp-lbl">Rows processed</div></div>
+        <div><div class="imp-num">Real-time</div><div class="imp-lbl">Graph rendering</div></div>
+      </div>
+      <div class="proj-tech"><span class="tech-tag">C# WPF</span><span class="tech-tag">Blazor Server</span><span class="tech-tag">vis.js</span><span class="tech-tag">SQL Server</span><span class="tech-tag">.NET 8</span></div>
+    </div>
+
+    <!-- P4: Bulk importer tool -->
+    <div class="proj-card reveal">
+      <div class="proj-canvas-wrap"><canvas id="pc4"></canvas></div>
+      <div class="proj-num">04 / HIGH-PERFORMANCE TOOLING</div>
+      <div class="proj-title">Bulk Financial Data Importer</div>
+      <div class="proj-category">Desktop Tool · High-Volume Ingestion</div>
+      <p class="proj-desc">Developed a high-performance desktop tool for bulk-loading pipe-delimited financial extraction files into SQL Server via SqlBulkCopy. Handles multi-million row imports with automatic date format detection, timestamp processing, and full error reporting.</p>
+      <div class="proj-impact">
+        <div><div class="imp-num">M+ rows</div><div class="imp-lbl">Per import run</div></div>
+        <div><div class="imp-num">Auto</div><div class="imp-lbl">Format detection</div></div>
+      </div>
+      <div class="proj-tech"><span class="tech-tag">C# .NET 8</span><span class="tech-tag">WPF / MVVM</span><span class="tech-tag">SqlBulkCopy</span><span class="tech-tag">SQL Server</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-glow"></div>
+  <div class="contact-inner reveal">
+    <div class="sec-label" style="text-align:center;margin-bottom:16px">Get In Touch</div>
+    <h2 class="contact-heading">Let's Build Something <span class="hl">Intelligent</span></h2>
+    <p class="contact-sub">Open to senior data analytics, portfolio intelligence, and engineering change roles. Always happy to discuss data architecture, ETL challenges, or audit automation.</p>
+    <div class="contact-links">
+      <a href="mailto:akhilshibu.mec@gmail.com" class="c-link">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Email Me
+      </a>
+      <a href="https://www.linkedin.com/in/akhil-shibu-1129739a" target="_blank" class="c-link">
+        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft">© 2025 <span class="ft-a">Akhil P Shibu</span></div>
+  <div class="ft">Data & Analytics · London</div>
+  <div class="ft"><span class="ft-a">akhilshibu.mec@gmail.com</span></div>
+</footer>
+
+<script>
+// ─── CURSOR ───────────────────────────────────────────────────────────
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring'),dot=document.getElementById('cursor-dot');
+let mx=0,my=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx-5+'px';cur.style.top=my-5+'px';
+  dot.style.left=mx-2+'px';dot.style.top=my-2+'px';
+  setTimeout(()=>{ring.style.left=mx-16+'px';ring.style.top=my-16+'px';},80);
+});
+document.addEventListener('mousedown',()=>{cur.style.transform='scale(3)';cur.style.opacity='.5';});
+document.addEventListener('mouseup',()=>{cur.style.transform='scale(1)';cur.style.opacity='1';});
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.transform='scale(1.8)';ring.style.borderColor='var(--accent3)';});
+  el.addEventListener('mouseleave',()=>{ring.style.transform='scale(1)';ring.style.borderColor='rgba(0,212,255,.5)';});
+});
+
+// ─── BG PARTICLE NETWORK ─────────────────────────────────────────────
+const bgC=document.getElementById('bg-canvas'),bgX=bgC.getContext('2d');
+let BW,BH,parts=[];
+function resizeBg(){BW=bgC.width=window.innerWidth;BH=bgC.height=window.innerHeight;}
+resizeBg();window.addEventListener('resize',resizeBg);
+class Pt{
+  constructor(){this.reset();}
+  reset(){this.x=Math.random()*BW;this.y=Math.random()*BH;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.r=Math.random()*1.4+.3;this.a=Math.random()*.4+.08;this.col=Math.random()>.6?'0,212,255':Math.random()>.5?'123,47,255':'0,255,157';}
+  update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>BW||this.y<0||this.y>BH)this.reset();}
+  draw(){bgX.beginPath();bgX.arc(this.x,this.y,this.r,0,Math.PI*2);bgX.fillStyle=`rgba(${this.col},${this.a})`;bgX.fill();}
+}
+for(let i=0;i<140;i++)parts.push(new Pt());
+function connPts(){
+  for(let i=0;i<parts.length;i++)for(let j=i+1;j<parts.length;j++){
+    const dx=parts[i].x-parts[j].x,dy=parts[i].y-parts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<90){bgX.beginPath();bgX.moveTo(parts[i].x,parts[i].y);bgX.lineTo(parts[j].x,parts[j].y);bgX.strokeStyle=`rgba(0,212,255,${.05*(1-d/90)})`;bgX.lineWidth=.4;bgX.stroke();}
+  }
+}
+(function bgLoop(){bgX.clearRect(0,0,BW,BH);parts.forEach(p=>{p.update();p.draw();});connPts();requestAnimationFrame(bgLoop);})();
+
+// ─── BLADES CANVAS ───────────────────────────────────────────────────
+(function bladesViz(){
+  const c=document.getElementById('blades-canvas');if(!c)return;
+  const x=c.getContext('2d');
+  function resize(){c.width=c.parentElement.offsetWidth;c.height=c.parentElement.offsetHeight;}
+  resize();window.addEventListener('resize',resize);
+
+  const erps=[
+    {lbl:'Oracle R12',col:'#00d4ff'},{lbl:'Dynamics 365',col:'#00d4ff'},
+    {lbl:'SAP',col:'#00d4ff'},{lbl:'Navision',col:'#7b2fff'},
+    {lbl:'Infor SUN',col:'#7b2fff'},{lbl:'JD Edwards',col:'#7b2fff'},
+  ];
+  const outs=[{lbl:'GL Data'},{lbl:'Trial Balance'},{lbl:'Journal Entries'}];
+  let pkts=[];
+
+  function spawnPkt(side){
+    const src=erps[Math.floor(Math.random()*erps.length)];
+    const dst=outs[Math.floor(Math.random()*outs.length)];
+    pkts.push({src,dst,t:0,col:src.col,side,size:Math.random()*2+1.5});
+  }
+  setInterval(()=>spawnPkt('l'),350);
+  setInterval(()=>spawnPkt('r'),550);
+
+  function loop(){
+    const W=c.width,H=c.height;
+    x.clearRect(0,0,W,H);
+
+    // Grid lines
+    x.strokeStyle='rgba(0,212,255,.04)';x.lineWidth=.5;
+    for(let i=0;i<W;i+=40){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke();}
+    for(let j=0;j<H;j+=40){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke();}
+
+    const cx=W/2,cy=H/2;
+
+    // Connection lines left (ERPs)
+    erps.forEach((e,i)=>{
+      const ey=H*.15+i*(H*.72/(erps.length-1));
+      x.beginPath();x.moveTo(50,ey);x.lineTo(cx-30,cy);
+      x.strokeStyle=`rgba(0,212,255,.08)`;x.lineWidth=.8;x.stroke();
+    });
+    // Connection lines right (outputs)
+    outs.forEach((o,i)=>{
+      const oy=H*.25+i*(H*.5/(outs.length-1));
+      x.beginPath();x.moveTo(cx+30,cy);x.lineTo(W-50,oy);
+      x.strokeStyle=`rgba(0,255,157,.08)`;x.lineWidth=.8;x.stroke();
+    });
+
+    // Packets
+    pkts=pkts.filter(p=>p.t<1);
+    pkts.forEach(p=>{
+      p.t+=.012;
+      let px,py;
+      if(p.side==='l'){
+        const i=erps.indexOf(p.src),ey=H*.15+i*(H*.72/(erps.length-1));
+        px=50+(cx-80)*p.t;py=ey+(cy-ey)*p.t;
+      } else {
+        const i=outs.indexOf(p.dst),oy=H*.25+i*(H*.5/(outs.length-1));
+        px=cx+30+(W-80-cx)*p.t;py=cy+(oy-cy)*p.t;
+      }
+      x.beginPath();x.arc(px,py,p.size,0,Math.PI*2);
+      x.fillStyle=p.col;x.shadowColor=p.col;x.shadowBlur=10;x.fill();x.shadowBlur=0;
+    });
+
+    // ERP labels left
+    erps.forEach((e,i)=>{
+      const ey=H*.15+i*(H*.72/(erps.length-1));
+      x.beginPath();x.arc(50,ey,6,0,Math.PI*2);
+      x.fillStyle='rgba(0,212,255,.12)';x.strokeStyle=e.col;x.lineWidth=1.2;x.fill();x.stroke();
+      x.font='bold 9px Space Mono,monospace';x.fillStyle=e.col;x.textAlign='left';x.textBaseline='middle';
+      x.fillText(e.lbl,62,ey);
+    });
+
+    // Centre BLADES node
+    const r=28;
+    x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);
+    x.fillStyle='rgba(0,212,255,.07)';x.strokeStyle='rgba(0,212,255,.5)';x.lineWidth=1.5;x.fill();x.stroke();
+    // pulsing ring
+    const pulse=.5+.5*Math.sin(Date.now()*.003);
+    x.beginPath();x.arc(cx,cy,r+12+pulse*8,0,Math.PI*2);
+    x.strokeStyle=`rgba(0,212,255,${.15*pulse})`;x.lineWidth=1;x.stroke();
+    x.font='bold 10px Space Mono,monospace';x.fillStyle='#00d4ff';x.textAlign='center';x.textBaseline='middle';
+    x.fillText('BLADES',cx,cy);
+
+    // Output labels right
+    outs.forEach((o,i)=>{
+      const oy=H*.25+i*(H*.5/(outs.length-1));
+      x.beginPath();x.arc(W-50,oy,6,0,Math.PI*2);
+      x.fillStyle='rgba(0,255,157,.12)';x.strokeStyle='#00ff9d';x.lineWidth=1.2;x.fill();x.stroke();
+      x.font='bold 9px Space Mono,monospace';x.fillStyle='#00ff9d';x.textAlign='right';x.textBaseline='middle';
+      x.fillText(o.lbl,W-62,oy);
+    });
+
+    // Data counters
+    const t=Date.now();
+    x.font='10px Space Mono,monospace';x.fillStyle='rgba(0,212,255,.35)';x.textAlign='center';
+    x.fillText(`RECORDS PROCESSED: ${(1234567+Math.floor(t/100)%9999).toLocaleString()}`,cx,H-20);
+
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+// ─── PROJECT CARD CANVASES ────────────────────────────────────────────
+// Generic factory: each canvas gets a unique animated ETL/data viz
+function makeProjectCanvas(id, type) {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const x = c.getContext('2d');
+  function resize() { c.width = c.parentElement.offsetWidth; c.height = c.parentElement.offsetHeight; }
+  resize(); window.addEventListener('resize', resize);
+
+  if (type === 'pipeline') {
+    // Horizontal ETL pipeline animation
+    const stages = ['EXTRACT','CLEANSE','TRANSFORM','VALIDATE','LOAD'];
+    const colors  = ['#00d4ff','#7b2fff','#00d4ff','#00ff9d','#ffc847'];
+    let pkts = [];
+    setInterval(() => {
+      pkts.push({ stage: 0, t: 0, col: colors[0], size: Math.random()*2+2 });
+    }, 600);
+
+    (function loop() {
+      const W=c.width,H=c.height;
+      x.clearRect(0,0,W,H);
+
+      // bg grid
+      x.strokeStyle='rgba(0,212,255,.04)';x.lineWidth=.5;
+      for(let i=0;i<W;i+=30){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke();}
+
+      const stW = W / stages.length;
+      // Stage boxes
+      stages.forEach((s,i) => {
+        const sx = i*stW+stW*.1, sy = H*.25, sw = stW*.8, sh = H*.5;
+        x.strokeStyle = colors[i]+'33'; x.lineWidth=1;
+        x.strokeRect(sx,sy,sw,sh);
+        x.font='bold 8px Space Mono,monospace';
+        x.fillStyle=colors[i];x.textAlign='center';x.textBaseline='middle';
+        x.fillText(s, i*stW+stW/2, H/2);
+        // connectors
+        if(i<stages.length-1){
+          x.beginPath();x.moveTo(i*stW+stW,H/2);x.lineTo((i+1)*stW,H/2);
+          x.strokeStyle=colors[i]+'44';x.lineWidth=1;x.stroke();
+        }
+      });
+
+      // Packets
+      pkts = pkts.filter(p=>p.t<1);
+      pkts.forEach(p=>{
+        p.t += .008;
+        const px = p.t*W, py = H/2+(Math.sin(p.t*Math.PI*4)*10);
+        const stageIdx = Math.floor(p.t * stages.length);
+        const col = colors[Math.min(stageIdx, colors.length-1)];
+        x.beginPath();x.arc(px,py,p.size,0,Math.PI*2);
+        x.fillStyle=col;x.shadowColor=col;x.shadowBlur=8;x.fill();x.shadowBlur=0;
+      });
+      requestAnimationFrame(loop);
+    })();
+
+  } else if (type === 'network') {
+    // Network graph
+    const nodes = Array.from({length:12},()=>({
+      x:Math.random(), y:Math.random(),
+      vx:(Math.random()-.5)*.003, vy:(Math.random()-.5)*.003,
+      r:Math.random()*4+3,
+      col:Math.random()>.5?'#00d4ff':'#7b2fff',
+      pulse:Math.random()*Math.PI*2
+    }));
+    (function loop(){
+      const W=c.width,H=c.height;
+      x.clearRect(0,0,W,H);
+      nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>1)n.vx*=-1;if(n.y<0||n.y>1)n.vy*=-1;n.pulse+=.04;});
+      // edges
+      for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+        const dx=(nodes[i].x-nodes[j].x)*W,dy=(nodes[i].y-nodes[j].y)*H,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<W*.28){x.beginPath();x.moveTo(nodes[i].x*W,nodes[i].y*H);x.lineTo(nodes[j].x*W,nodes[j].y*H);x.strokeStyle=`rgba(0,212,255,${.12*(1-d/(W*.28))})`;x.lineWidth=.7;x.stroke();}
+      }
+      nodes.forEach(n=>{
+        const p=.5+.5*Math.sin(n.pulse);
+        x.beginPath();x.arc(n.x*W,n.y*H,n.r+p*3,0,Math.PI*2);
+        x.fillStyle=n.col+'22';x.fill();
+        x.beginPath();x.arc(n.x*W,n.y*H,n.r,0,Math.PI*2);
+        x.fillStyle=n.col+'55';x.strokeStyle=n.col;x.lineWidth=1;x.fill();x.stroke();
+      });
+      requestAnimationFrame(loop);
+    })();
+
+  } else if (type === 'bars') {
+    // Animated bar chart — audit data viz
+    const bars=8;const vals=Array.from({length:bars},()=>Math.random()*.7+.2);
+    const targets=Array.from({length:bars},()=>Math.random()*.7+.2);
+    const cols=['#00d4ff','#7b2fff','#00ff9d','#ffc847','#00d4ff','#7b2fff','#00ff9d','#ffc847'];
+    let t=0;
+    (function loop(){
+      const W=c.width,H=c.height;
+      x.clearRect(0,0,W,H);
+      t+=.015;
+      if(t>1){t=0;vals.forEach((_,i)=>{vals[i]=targets[i];targets[i]=Math.random()*.7+.2;});}
+      const bW=W/bars*.6,gap=W/bars*.4/2;
+      bars_arr:for(let i=0;i<bars;i++){
+        const v=vals[i]+(targets[i]-vals[i])*t;
+        const bH=v*(H*.7);
+        const bx=i*(W/bars)+gap;
+        const by=H*.85-bH;
+        // glow
+        x.shadowColor=cols[i];x.shadowBlur=12;
+        x.fillStyle=cols[i]+'33';x.fillRect(bx,by,bW,bH);
+        x.fillStyle=cols[i]+'99';x.fillRect(bx,by,bW,4);
+        x.shadowBlur=0;
+        // label
+        x.font='7px Space Mono,monospace';x.fillStyle=cols[i];x.textAlign='center';x.textBaseline='top';
+        x.fillText(Math.round(v*100)+'%',bx+bW/2,H*.88);
+      }
+      // Axes
+      x.strokeStyle='rgba(0,212,255,.15)';x.lineWidth=1;
+      x.beginPath();x.moveTo(0,H*.85);x.lineTo(W,H*.85);x.stroke();
+      requestAnimationFrame(loop);
+    })();
+
+  } else if (type === 'stream') {
+    // Streaming data rows / log feed
+    const rows=[];const maxRows=12;
+    const templates=[
+      'GL_ENTRY | ACC:4001 | AMT:£{n} | OK',
+      'TB_ROW | PER:2024-Q3 | DR:£{n} | CR:£{n}',
+      'JE_VALIDATE | REF:{r} | PASS ✓',
+      'ERP_EXTRACT | REC:{n} rows | DONE',
+      'HASH_CHECK | INTEGRITY OK | SHA256',
+      'NULL_SCAN | 0 violations | CLEAN',
+    ];
+    let tick=0;
+    setInterval(()=>{
+      const tmpl=templates[Math.floor(Math.random()*templates.length)];
+      const row=tmpl.replace(/{n}/g,()=>Math.floor(Math.random()*99999).toLocaleString())
+                    .replace(/{r}/g,()=>'REF-'+Math.random().toString(36).substr(2,6).toUpperCase());
+      rows.unshift({text:row,age:0,col:row.includes('PASS')||row.includes('OK')||row.includes('DONE')||row.includes('CLEAN')?'#00ff9d':'#00d4ff'});
+      if(rows.length>maxRows)rows.pop();
+      tick++;
+    },300);
+    (function loop(){
+      const W=c.width,H=c.height;
+      x.clearRect(0,0,W,H);
+      x.fillStyle='rgba(0,0,0,.2)';x.fillRect(0,0,W,H);
+      const lh=H/maxRows;
+      rows.forEach((r,i)=>{
+        r.age++;
+        const a=Math.max(0,1-r.age/30);
+        x.font=`${Math.min(W*.025,9)}px Space Mono,monospace`;
+        x.fillStyle=r.col+(Math.round(a*255).toString(16).padStart(2,'0'));
+        x.textAlign='left';x.textBaseline='middle';
+        x.fillText(r.text,8,i*lh+lh/2);
+      });
+      // scan line
+      const sl=(Date.now()%2000)/2000;
+      x.fillStyle=`rgba(0,212,255,${.06*(1-Math.abs(sl-.5)*2)})`;
+      x.fillRect(0,sl*H,W,2);
+      requestAnimationFrame(loop);
+    })();
+  }
+}
+
+makeProjectCanvas('pc1','pipeline');
+makeProjectCanvas('pc2','bars');
+makeProjectCanvas('pc3','network');
+makeProjectCanvas('pc4','stream');
+
+// ─── SCROLL REVEAL ────────────────────────────────────────────────────
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),60);});
+},{threshold:.1});
+document.querySelectorAll('.reveal,.tl-item').forEach((el,i)=>{
+  if(el.classList.contains('tl-item'))el.style.transitionDelay=i*.12+'s';
+  revObs.observe(el);
+});
+
+// ─── NAV LOGO TYPEWRITER ──────────────────────────────────────────────
+const nl=document.getElementById('nav-logo');
+const txt='APS';let ti=0,typed='';
+function typeIt(){if(ti<txt.length){typed+=txt[ti++];nl.innerHTML=typed+'<span>.dev</span>';setTimeout(typeIt,180);}}
+setTimeout(typeIt,600);
+
+// ─── COUNTER ANIM ─────────────────────────────────────────────────────
+const statsObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      [['s1',9,'+',' yrs'],['s2',60,'%',''],['s3',30,'+',''],['s4',6,'','']].forEach(([id,v,suf,pre])=>{
+        const el=document.getElementById(id);if(!el)return;
+        let cur=0;const step=v/40;
+        const iv=setInterval(()=>{cur=Math.min(cur+step,v);el.textContent=Math.round(cur)+suf;if(cur>=v)clearInterval(iv);},40);
+      });
+      statsObs.disconnect();
+    }
+  });
+},{threshold:.5});
+const hs=document.querySelector('.hero-stats');if(hs)statsObs.observe(hs);
+</script>
+</body>
+</html>
